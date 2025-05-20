@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог автомобилей</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">AUTOIMPORT</div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" data-animate>
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="images/swiper1.jpg" alt="swiper1" loading="lazy">
+                    <h1>Автомобили из Азии</h1>
+                    <button><a href="catalog.html">Подобрать авто</a></button>
+                </div>
+                <div class="swiper-slide">
+                    <img src="images/swiper2.jpg" alt="swiper2" loading="lazy">
+                    <h1>Электромобили и кей-кары</h1>
+                    <button><a href="catalog.html">Подобрать авто</a></button>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <div class="currency-catalog-container" data-animate>
+        <section class="currency">
+            <h2>Курсы валют</h2>
+            <ul id="currency-rates">
+                <li><img src="images/flags/usd.png" alt="Флаг США" class="currency-flag">пися $1 = Загрузка...₽ (USD/RUB)</li>
+                <li><img src="images/flags/eur.png" alt="Флаг Евросоюза" class="currency-flag"> €1 = Загрузка...₽ (EUR/RUB)</li>
+                <li><img src="images/flags/cny.png" alt="Флаг Китая" class="currency-flag"> 1元 = Загрузка...₽ (CNY/RUB)</li>
+                <li><img src="images/flags/jpy.png" alt="Флаг Японии" class="currency-flag"> 1 RUB = Загрузка...¥ (RUB/JPY)</li>
+                <li><img src="images/flags/krw.png" alt="Флаг Южной Кореи" class="currency-flag"> 1 RUB = Загрузка...₩ (RUB/KRW)</li>
+            </ul>
+        </section>
+
+        <section class="catalog-preview">
+            <h2>Популярные автомобили</h2>
+            <div class="catalog-grid">
+                <div class="car-card">
+                    <img src="images/haval-h6.jpg" alt="Haval H6" loading="lazy">
+                    <h3>Haval H6</h3>
+                    <p>71 900 元</p>
+                    <p>2025, 2.0L 2WD MT Бензин, без пробега</p>
+                </div>
+                <div class="car-card">
+                    <img src="images/honda-breeze.jpg" alt="Honda Breeze" loading="lazy">
+                    <h3>Honda Breeze</h3>
+                    <p>140 000 元</p>
+                    <p>2020, 1.5L 4WD AT Бензин, пробег 40 000 км</p>
+                </div>
+                <div class="car-card">
+                    <img src="images/tank-300.jpg" alt="Tank 300" loading="lazy">
+                    <h3>Tank 300</h3>
+                    <p>158 000 元</p>
+                    <p>2023, 2.0L 4WD AT, пробег 27 000 км</p>
+                </div>
+                <div class="car-card">
+                    <img src="images/lynk-and-co-05.jpg" alt="Lynk and co 05" loading="lazy">
+                    <h3>Lynk and co 05</h3>
+                    <p>103 000 元</p>
+                    <p>2022, 2.0L 4WD AT, пробег 56 500 км</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="calculator" data-animate>
+        <h2>Рассчитать стоимость</h2>
+        <form id="calc-form">
+            <label>
+                Марка:
+                <input type="text" name="brand" placeholder="Nissan" required>
+            </label>
+            <label>
+                Год:
+                <input type="number" name="year" placeholder="2023" required>
+            </label>
+            <label>
+                Базовая цена ($):
+                <input type="number" name="base-price" placeholder="20000" required>
+            </label>
+            <button type="submit">Рассчитать</button>
+        </form>
+        <p id="calc-result"></p>
+    </section>
+
+    <section class="form" data-animate>
+        <h2>Заинтерeсовались автомобилем? Оставьте заявку!</h2>
+        <form id="request-form">
+            <input type="text" name="name" placeholder="Ваше имя" required>
+            <input type="tel" name="phone" placeholder="Ваш телефон" required>
+            <button type="submit">Отправить</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2025 AUTOIMPORT. Все права защищены.</p>
+    </footer>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<script src="script.js" type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
+        <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О нас - AutoKorea</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <div class="logo">AUTOIMPORT</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="about.html" class="active">О нас</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Секция "О нас" -->
+
+<section class="about-section">
+    <div class="content-container">
+        <h1>О компании AUTOIMPORT</h1>
+        <div class="divider"></div>
+        <p class="intro-text">
+            AUTOIMPORT – ваш надежный партнер в выборе автомобилей из Азии. Мы специализируемся на поставке <span class="highlight">электромобилей</span>, кей-каров и гибридов из Японии, Кореи и Китая.
+        </p>
+        <p class="mission-text">
+            Наша миссия – сделать процесс покупки автомобиля <span class="highlight">простым, прозрачным и выгодным</span>. Мы работаем напрямую с проверенными поставщиками, чтобы предложить вам лучшие цены и качество.
+        </p>
+
+        <h2>Почему выбирают нас?</h2>
+        <div class="advantages-grid">
+            <div class="advantage-card">
+                <h3>Широкий выбор</h3>
+                <p>Автомобили от Nissan Leaf до Daihatsu Move – у нас есть всё, что вам нужно.</p>
+            </div>
+            <div class="advantage-card">
+                <h3>Прозрачная стоимость</h3>
+                <p>Все расходы учтены – никаких скрытых платежей.</p>
+            </div>
+            <div class="advantage-card">
+                <h3>Быстрая доставка</h3>
+                <p>Доставим ваш автомобиль из Азии в Россию в кратчайшие сроки.</p>
+            </div>
+            <div class="advantage-card">
+                <h3>Полная поддержка</h3>
+                <p>Мы с вами на каждом этапе – от выбора до получения.</p>
+            </div>
+        </div>
+
+        <h2>Свяжитесь с нами</h2>
+        <div class="contact-info">
+            <p><strong>Адрес:</strong> г. Москва, ул. Примерная, д. 10</p>
+            <p><strong>Телефон:</strong> +7 (999) 123-45-67</p>
+            <p><strong>Email:</strong> info@autoimport.com</p>
+        </div>
+
+        <h2>Мы в соцсетях</h2>
+        <div class="social-buttons">
+            <a href="https://t.me/zakazauto02" class="social-button telegram" target="_blank">
+                <span class="icon">📱</span> Telegram
+            </a>
+            <a href="https://instagram.com" class="social-button instagram" target="_blank">
+                <span class="icon">📸</span> Instagram
+            </a>
+            <a href="https://wa.me" class="social-button whatsapp" target="_blank">
+                <span class="icon">💬</span> WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+
+    <!-- Подвал -->
+    <footer>
+        <p>© 2025 AUTOIMPORT. Все права защищены.</p>
+    </footer>
+</body>
+</html>
