@@ -1,0 +1,148 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTOIMPORT - Каталог</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">AUTOIMPORT</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="catalog.html" class="active">Каталог</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="catalog-section">
+        <h1>Каталог автомобилей</h1>
+        <div class="divider"></div>
+
+        <form id="filter-form" class="filter-form">
+            <label>Марка:
+                <select id="brand-select" name="brand">
+                    <option value="">Все</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="BYD">BYD</option>
+                    <option value="Daihatsu">Daihatsu</option>
+                    <option value="Chery">Chery</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Haval">Haval</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Tank">Tank</option>
+                    <option value="Lynk and co">Lynk and co</option>
+                </select>
+            </label>
+            <label>Модель:
+                <select id="model-select" name="model">
+                    <option value="">Все</option>
+                </select>
+            </label>
+            <label>Поколение:
+                <input type="text" name="generation">
+            </label>
+            <label>КПП:
+                <select name="transmission">
+                    <option value="">Все</option>
+                    <option value="Автомат">Автомат</option>
+                    <option value="Механика">Механика</option>
+                    <option value="Вариатор">Вариатор</option>
+                    <option value="Робот">Робот</option>
+                </select>
+            </label>
+            <label>Тип двигателя:
+                <select name="engineType">
+                    <option value="">Все</option>
+                    <option value="Электрический">Электрический</option>
+                    <option value="Бензин">Бензин</option>
+                    <option value="Дизель">Дизель</option>
+                    <option value="Гибрид">Гибрид</option>
+                </select>
+            </label>
+            <label>Год от:
+                <input type="number" name="year-min" min="1900" max="2025">
+            </label>
+            <label>Год до:
+                <input type="number" name="year-max" min="1900" max="2025">
+            </label>
+            <label>Привод:
+                <select name="driveType">
+                    <option value="">Все</option>
+                    <option value="Передний">Передний</option>
+                    <option value="Задний">Задний</option>
+                    <option value="Полный">Полный</option>
+                    <option value="2WD">2WD</option>
+                    <option value="4WD">4WD</option>
+                </select>
+            </label>
+            <label>Цена от ($):
+                <input type="number" name="price-min" min="0">
+            </label>
+            <label>Цена до ($):
+                <input type="number" name="price-max" min="0">
+            </label>
+            <label>Пробег от (км):
+                <input type="number" name="mileage-min" min="0">
+            </label>
+            <label>Пробег до (км):
+                <input type="number" name="mileage-max" min="0">
+            </label>
+            <button type="button" id="reset-filters">Сбросить фильтры</button>
+        </form>
+        <p class="filter-count">Найдено: 0 автомобилей</p>
+        <div class="catalog-grid" id="catalog-grid"></div>
+    </section>
+
+    <footer>
+        <p>© 2025 AUTOIMPORT. Все права защищены.</p>
+    </footer>
+
+    <script src="catalog.js"></script>
+</body>
+</html>

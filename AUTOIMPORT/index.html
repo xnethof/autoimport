@@ -1,0 +1,129 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог автомобилей</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">AUTOIMPORT</div>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="about.html">О нас</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="images/swiper1.jpg" alt="Баннер 1">
+                    <h1>Автомобили из Азии</h1>
+                    <button class="cta-button" onclick="window.location.href='catalog.html'">Подобрать авто</button>
+                </div>
+                <div class="swiper-slide">
+                    <img src="images/swiper2.jpg" alt="Баннер 2">
+                    <h1>Электромобили и кей-кары</h1>
+                    <button class="cta-button" onclick="window.location.href='catalog.html'">Подобрать авто</button>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <section class="currency-catalog-container">
+        <div class="currency" data-animate>
+            <h2>Курсы валют</h2>
+            <ul id="currency-rates">
+                <li>$1 = Загрузка...₽ (USD/RUB)</li>
+                <li>€1 = Загрузка...₽ (EUR/RUB)</li>
+                <li>1元 = Загрузка...₽ (CNY/RUB)</li>
+                <li>1 RUB = Загрузка...¥ (RUB/JPY)</li>
+                <li>1 RUB = Загрузка...₩ (RUB/KRW)</li>
+            </ul>
+        </div>
+
+        <div class="catalog-preview" data-animate>
+            <h2>Популярные автомобили</h2>
+            <div class="catalog-grid" id="popular-cars"></div>
+        </div>
+    </section>
+
+    <section class="calculator" data-animate>
+        <h2>Рассчитать стоимость</h2>
+        <form id="calc-form">
+            <label>Марка: <input type="text" name="brand" required></label>
+            <label>Год: <input type="number" name="year" required></label>
+            <label>Базовая цена ($): <input type="number" name="base-price" required></label>
+            <button type="submit">Рассчитать</button>
+        </form>
+        <div id="calc-result"></div>
+    </section>
+
+    <section class="form" data-animate>
+        <h2>Заинтерeсовались автомобилем? Оставьте заявку!</h2>
+        <form id="request-form">
+            <input type="text" name="name" placeholder="Ваше имя" required>
+            <input type="tel" name="phone" placeholder="Ваш телефон" required>
+            <button type="submit">Отправить</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2025 AUTOIMPORT. Все права защищены.</p>
+    </footer>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

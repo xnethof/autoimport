@@ -1,0 +1,336 @@
+/* Общие стили для админ-панели */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background: #212121;
+    color: aliceblue;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+h1, h2, h3 {
+    margin: 0;
+}
+
+/* Шапка */
+header {
+    background: #2D2D2D;
+    color: aliceblue;
+    padding: 1em 2em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 2em;
+}
+
+nav ul li a {
+    color: aliceblue;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    color: #2ECC71;
+}
+
+/* Основной контейнер */
+.about-section {
+    padding: 4em 2em;
+    text-align: center;
+    color: aliceblue;
+}
+
+.content-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: rgba(45, 45, 45, 0.8);
+    padding: 2em;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.about-section h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.5em;
+    color: aliceblue;
+}
+
+.divider {
+    width: 100px;
+    height: 3px;
+    background: #2ECC71;
+    margin: 0 auto 2em;
+    border-radius: 2px;
+}
+
+.about-section h2 {
+    font-size: 1.8em;
+    margin: 2em 0 1em;
+    color: aliceblue;
+}
+
+/* Форма логина */
+#login-form {
+    max-width: 400px;
+    margin: 0 auto 2em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+#login-form label {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    color: aliceblue;
+}
+
+#login-form input {
+    padding: 0.8em;
+    border: 1px solid #D3D3D3;
+    border-radius: 4px;
+    background: #2D2D2D;
+    color: aliceblue;
+    transition: border-color 0.3s;
+}
+
+#login-form input:focus {
+    border-color: #2ECC71;
+    outline: none;
+}
+
+#login-form button {
+    background: #2ECC71;
+    color: aliceblue;
+    border: none;
+    padding: 0.8em 1.5em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#login-form button:hover {
+    background: #27AE60;
+}
+
+/* Форма добавления автомобиля */
+#car-form {
+    max-width: 600px;
+    margin: 0 auto 2em;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1em;
+}
+
+#car-form label {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    color: aliceblue;
+}
+
+#car-form input, #car-form select {
+    padding: 0.8em;
+    border: 1px solid #D3D3D3;
+    border-radius: 4px;
+    background: #2D2D2D;
+    color: aliceblue;
+    transition: border-color 0.3s;
+}
+
+#car-form input:focus, #car-form select:focus {
+    border-color: #2ECC71;
+    outline: none;
+}
+
+#car-form button {
+    background: #2ECC71;
+    color: aliceblue;
+    border: none;
+    padding: 0.8em 1.5em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    grid-column: span 2;
+    justify-self: center;
+}
+
+#car-form button:hover {
+    background: #27AE60;
+}
+
+#car-result, #login-result {
+    margin-top: 1em;
+    font-size: 1.1em;
+    color: #2ECC71;
+}
+
+/* Список автомобилей */
+#cars-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5em;
+}
+
+.car-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1em;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.car-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.car-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.car-card p {
+    color: aliceblue;
+    margin: 0.5em 0;
+}
+
+.car-card button {
+    background: #e74c3c;
+    color: aliceblue;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.car-card button:hover {
+    background: #c0392b;
+}
+
+/* Список заявок */
+#requests-list {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+#requests-list p {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1em;
+    margin: 0.5em 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#requests-list p:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#requests-list strong {
+    color: #2ECC71;
+}
+
+#requests-list small {
+    color: rgba(240, 248, 255, 0.7);
+    font-size: 0.9em;
+}
+
+#requests-list button {
+    background: #e74c3c;
+    color: aliceblue;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#requests-list button:hover {
+    background: #c0392b;
+}
+
+/* Подвал */
+footer {
+    background: #2D2D2D;
+    color: aliceblue;
+    text-align: center;
+    padding: 1em;
+    margin-top: auto;
+}
+
+/* Анимации появления */
+[data-animate] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+[data-animate].animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 1em;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+
+    .about-section h1 {
+        font-size: 2em;
+    }
+
+    #login-form, #car-form {
+        grid-template-columns: 1fr;
+    }
+
+    #car-form button {
+        grid-column: span 1;
+    }
+
+    #cars-list, #requests-list {
+        max-width: 100%;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
