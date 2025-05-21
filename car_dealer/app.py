@@ -6,16 +6,28 @@ import hashlib
 import datetime
 import os
 from werkzeug.utils import secure_filename
+from collections import defaultdict  # Новое: для отслеживания заявок по IP
 
 app = Flask(__name__)
 CORS(app)  # Разрешаем CORS для всех доменов
 
-SECRET_KEY = "your-secret-key"  # Замени на безопасный ключ в продакшене
+SECRET_KEY = "VOVA_BEST123"  # Замени на безопасный ключ в продакшене
 SALT = "autoimport_salt"
 UPLOAD_FOLDER = "static/images"
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+# Новое: Хранилище для отслеживания заявок по IP
+request_counts = defaultdict(list)
+
+# Новое: Очистка старых заявок (старше 24 часов)
+def clean_old_requests():
+    now = datetime.datetime.now()
+    for ip in list(request_counts.keys()):
+        request_counts[ip] = [t for t in request_counts[ip] if (now - t).total_seconds() < 24 * 3600]
+        if not request_counts[ip]:
+            del request_counts[ip]
 
 # Проверка расширения файла
 def allowed_file(filename):
@@ -43,7 +55,7 @@ def get_db():
     return conn
 
 # Аутентификация
-ADMIN_CREDENTIALS = {"username": "admin", "hashed_password": hash_password("admin123")}
+ADMIN_CREDENTIALS = {"username": "vavok111", "hashed_password": hash_password("dyadyavova1203")}
 
 @app.route("/api/login", methods=["POST"])
 def login():
@@ -217,10 +229,19 @@ def delete_car(car_id):
 # Создание заявки
 @app.route("/api/requests", methods=["POST"])
 def create_request():
+    client_ip = request.remote_addr  # Новое: Получаем IP клиента
+    clean_old_requests()  # Новое: Очищаем старые заявки
+
+    # Новое: Проверка лимита заявок
+    if len(request_counts[client_ip]) >= 2:
+        print(f"IP {client_ip} exceeded request limit")  # Логирование
+        return jsonify({"error": "Request limit exceeded. Try again tomorrow."}), 429
+
     data = request.get_json()
     required_fields = ["name", "contact"]
     for field in required_fields:
         if field not in data:
+            print(f"Missing field: {field} from IP {client_ip}")  # Логирование
             return jsonify({"error": f"Missing {field}"}), 400
 
     conn = get_db()
@@ -234,6 +255,9 @@ def create_request():
     cursor.execute("SELECT * FROM requests WHERE id = ?", (request_id,))
     req = dict(cursor.fetchone())
     conn.close()
+
+    request_counts[client_ip].append(datetime.datetime.now())  # Новое: Добавляем заявку в счётчик
+    print(f"Request created by IP {client_ip}, total: {len(request_counts[client_ip])}")  # Логирование
     return jsonify(req), 201
 
 # Получение заявок
@@ -241,10 +265,12 @@ def create_request():
 def get_requests():
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
+        print("Missing Authorization header")  # Логирование
         return jsonify({"error": "Unauthorized"}), 401
 
     token = auth_header.split(" ")[1]
     if not verify_token(token):
+        print("Invalid or expired token")  # Логирование
         return jsonify({"error": "Invalid token"}), 401
 
     conn = get_db()
@@ -259,10 +285,12 @@ def get_requests():
 def delete_request(request_id):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
+        print("Missing Authorization header for delete request")  # Логирование
         return jsonify({"error": "Unauthorized"}), 401
 
     token = auth_header.split(" ")[1]
     if not verify_token(token):
+        print("Invalid or expired token for delete request")  # Логирование
         return jsonify({"error": "Invalid token"}), 401
 
     conn = get_db()

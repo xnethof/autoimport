@@ -69,32 +69,82 @@ document.getElementById('calc-form')?.addEventListener('submit', function(e) {
         `Стоимость ${brand} (${year}): $${total.toFixed(2)}`;
 });
 
-// Обработчик формы заявки
-document.getElementById('request-form')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const name = this.querySelector('[name="name"]').value;
-    const contact = this.querySelector('[name="contact"]').value;
+// Отправка заявки (Главная страница)
+const requestForm = document.getElementById('request-form');
+if (requestForm) {
+    requestForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = requestForm.querySelector('input[name="name"]').value;
+        const contact = requestForm.querySelector('input[name="phone"]').value;
 
-    if (!name || !contact) {
-        document.getElementById('request-result').textContent = 'Пожалуйста, заполните имя и телефон!';
-        return;
-    }
+        try {
+            const response = await fetch('http://localhost:8001/api/requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, contact })
+            });
 
-    try {
-        const response = await fetch('http://localhost:8001/api/requests', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, contact, message: null })
-        });
-        if (!response.ok) {
-            throw new Error('Ошибка при отправке заявки');
+            const result = await response.json();
+            if (response.ok) {
+                showNotification('Заявка успешно отправлена!');
+                requestForm.reset();
+            } else {
+                showNotification(result.error || 'Ошибка при отправке заявки.', true);
+            }
+        } catch (error) {
+            showNotification('Ошибка сети. Попробуйте позже.', true);
         }
-        document.getElementById('request-result').textContent = 'Заявка успешно отправлена!';
-        this.reset();
-    } catch (error) {
-        document.getElementById('request-result').textContent = 'Ошибка: ' + error.message;
-    }
-});
+    });
+}
+
+// Отправка заявки (Страница Контакты)
+const contactRequestForm = document.getElementById('contact-request-form');
+if (contactRequestForm) {
+    contactRequestForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = contactRequestForm.querySelector('input[name="name"]').value;
+        const contact = contactRequestForm.querySelector('input[name="phone"]').value;
+
+        try {
+            const response = await fetch('http://localhost:8001/api/requests', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, contact })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                showNotification('Заявка успешно отправлена!');
+                contactRequestForm.reset();
+            } else {
+                showNotification(result.error || 'Ошибка при отправке заявки.', true);
+            }
+        } catch (error) {
+            showNotification('Ошибка сети. Попробуйте позже.', true);
+        }
+    });
+}
+
+// Функция для показа уведомления
+function showNotification(message, isError = false) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${isError ? 'error' : ''}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // Показать уведомление
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+
+    // Скрыть через 3 секунды
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
 
 // Получение курсов валют через API
 if (document.getElementById('currency-rates')) {

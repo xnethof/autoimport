@@ -1,4 +1,5 @@
 import sqlite3
+import datetime
 
 def create_database():
     conn = sqlite3.connect("car_dealer.db")
@@ -28,7 +29,8 @@ def create_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             contact TEXT NOT NULL,
-            message TEXT
+            message TEXT,
+            created_at TEXT  -- Новое: Поле для времени создания
         )
     """)
 
@@ -48,13 +50,14 @@ def create_database():
 
     # Тестовые данные для requests
     requests = [
-        ("Иван", "+79991234567", "Хочу Haval H6"),
-        ("Мария", "+79997654321", None)
+        ("Иван", "+79991234567", "Хочу Haval H6", datetime.datetime.now().isoformat()),
+        ("Мария", "+79997654321", None, (datetime.datetime.now() - datetime.timedelta(days=1)).isoformat()),
+        ("Алексей", "+79999876543", "Интересует Toyota Voxy", (datetime.datetime.now() - datetime.timedelta(hours=5)).isoformat())
     ]
 
     cursor.executemany("""
-        INSERT OR IGNORE INTO requests (name, contact, message)
-        VALUES (?, ?, ?)
+        INSERT OR IGNORE INTO requests (name, contact, message, created_at)
+        VALUES (?, ?, ?, ?)
     """, requests)
 
     conn.commit()
