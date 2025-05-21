@@ -26,7 +26,7 @@ button {
     background: #2ECC71;
     color: aliceblue;
     border: none;
-    padding: 0.8em 1.5em;
+    padding: 0.8em 7.5em;
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s;
@@ -169,23 +169,18 @@ nav ul li a.active {
     padding: 0em 0em 1.5em 0em;
 }
 
-.catalog-preview h2 {
-    padding: 0em 0em 1.5em 0em;
-}
-
 .catalog-preview {
     flex: 2;
     min-width: 600px;
-    padding: 1em 0em 2em 0em;
+    padding: 1em 0em 1em 0em;
     text-align: center;
     color: aliceblue;
 }
 
 .catalog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 2fr));
     gap: 1.5em;
-    max-width: 1470px;
     margin: 0 auto;
     padding: 0em 0em 2em 0em;
 }
@@ -204,7 +199,7 @@ nav ul li a.active {
 
 .car-card img {
     width: 100%;
-    height: 150px;
+    height: 100px;
     object-fit: cover;
 }
 
@@ -281,14 +276,6 @@ nav ul li a.active {
 .form button {
     width: fit-content;
     margin: 0 auto;
-}
-
-/* Подвал */
-footer {
-    background: #2D2D2D;
-    color: aliceblue;
-    text-align: center;
-    padding: 1em;
 }
 
 /* Стили для страницы "О нас" */
@@ -396,7 +383,7 @@ footer {
     background: #2D2D2D;
     color: aliceblue;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: 15px;
     font-size: 1em;
     transition: background 0.3s ease;
 }
@@ -418,8 +405,8 @@ footer {
     display: inline-block;
     background: #2ECC71;
     color: aliceblue;
-    padding: 0.8em 2em;
-    border-radius: 8px;
+    padding: 0.9em 2em;
+    border-radius: 20px;
     text-decoration: none;
     font-weight: 700;
     transition: background 0.3s ease;
@@ -494,6 +481,15 @@ footer {
 .filter-section button:hover {
     background: #27AE60;
 }
+
+/* Подвал */
+footer {
+    background: #2D2D2D;
+    color: aliceblue;
+    text-align: center;
+    padding: 1em;
+}
+
 
 /* Адаптивность */
 @media (max-width: 768px) {

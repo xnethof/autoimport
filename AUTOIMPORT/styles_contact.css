@@ -151,6 +151,14 @@ nav ul li a.active {
     background: #3D3D3D;
 }
 
+/* Подвал */
+footer {
+    background: #2D2D2D;
+    color: aliceblue;
+    text-align: center;
+    padding: 1em;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
     header {
